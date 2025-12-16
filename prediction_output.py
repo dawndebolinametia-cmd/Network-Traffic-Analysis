@@ -49,13 +49,44 @@ def insert_predictions_to_db(predictions_df: pd.DataFrame, table_name: str = TAB
             cursor.close()
             connection.close()
 
+def insert_predictions_to_prediction_anomaly(csv_path: str, table_name: str = 'prediction_anomaly'):
+    try:
+        # Read the CSV file
+        df = pd.read_csv(csv_path)
+
+        connection = mysql.connector.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME,
+            port=DB_PORT
+        )
+
+        if connection.is_connected():
+            cursor = connection.cursor()
+            insert_query = f"""
+            INSERT INTO {table_name} (source_ip, timestamp, anomaly_flag, diff_seconds)
+            VALUES (%s, %s, %s, %s)
+            """
+            data_tuples = [tuple(row) for row in df.values]
+            cursor.executemany(insert_query, data_tuples)
+            connection.commit()
+            logger.info(f"Inserted {cursor.rowcount} prediction rows into {table_name}")
+
+    except Error as e:
+        logger.error(f"Error inserting predictions into {table_name}: {e}")
+        raise
+
+    finally:
+        if 'connection' in locals() and connection.is_connected():
+            cursor.close()
+            connection.close()
+
 def save_predictions(predictions_df: pd.DataFrame, csv_path: str = 'reports/predictions.csv'):
     save_predictions_to_csv(predictions_df, csv_path)
-    # DB insert optional if table matches
-    # insert_predictions_to_db(predictions_df)
+    # Insert into prediction_anomaly table
+    insert_predictions_to_prediction_anomaly('prediction_anomaly.csv')
 
 if __name__ == "__main__":
-    # Example usage
-    # df = pd.read_csv("predicted_anomalies.csv")  # Replace with your predictions
-    # save_predictions(df)
-    pass
+    # Insert prediction_anomaly data
+    insert_predictions_to_prediction_anomaly('prediction_anomaly.csv')

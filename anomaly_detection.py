@@ -45,11 +45,12 @@ def detect_anomalies_isolation_forest(data, contamination=0.1):
         anomaly_scores = model.decision_function(X_scaled)
         predictions = model.predict(X_scaled)
 
-        # Convert predictions to labels (1 for normal, -1 for anomaly)
+        # Convert predictions to labels (0 for normal, 1 for anomaly)
         data = data.copy()
         data['anomaly_score'] = anomaly_scores
-        data['is_anomaly'] = predictions
-        data['anomaly_label'] = data['is_anomaly'].map({1: 'normal', -1: 'anomaly'})
+        data['prediction'] = (predictions == -1).astype(int)  # 1 for anomaly, 0 for normal
+        data['anomaly_label'] = data['prediction'].map({0: 'normal', 1: 'anomaly'})
+        data['traffic_type'] = data['anomaly_label']
 
         logger.info(f"Anomaly detection completed. Detected {sum(predictions == -1)} anomalies out of {len(data)} samples")
         return data
