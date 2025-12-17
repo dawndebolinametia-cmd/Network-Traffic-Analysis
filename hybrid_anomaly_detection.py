@@ -279,7 +279,7 @@ def explain_detection_approaches():
 
 if __name__ == "__main__":
     # Explain the approach
-    explain_unsupervised_approach()
+    explain_detection_approaches()
 
     # Run unsupervised anomaly detection on hourly data
     results = unsupervised_anomaly_detection_hourly()

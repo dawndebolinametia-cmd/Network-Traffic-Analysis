@@ -8,7 +8,7 @@
 - [x] Apply Isolation Forest directly to aggregated hourly features
 
 ## Pending Tasks
-- [ ] Test the reverted unsupervised pipeline on network_traffic.csv
-- [ ] Verify hourly aggregation produces expected features
-- [ ] Confirm anomaly detection results are reasonable
-- [ ] Update any dependent scripts that reference the old hybrid approach
+- [x] Test the reverted unsupervised pipeline on network_traffic.csv
+- [x] Verify hourly aggregation produces expected features
+- [x] Confirm anomaly detection results are reasonable
+- [x] Update any dependent scripts that reference the old hybrid approach

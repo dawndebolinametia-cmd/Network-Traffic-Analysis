@@ -4,10 +4,45 @@ from sklearn.ensemble import IsolationForest, RandomForestClassifier
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
+import mysql.connector
+from datetime import datetime, timedelta
+import random
 import joblib
-from config import MODEL_PATH, RANDOM_STATE
+from config import (
+    DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT,
+    NETWORK_TRAFFIC_TABLE, PREDICTION_ANOMALY_TABLE, RANDOM_STATE
+)
 from logging_utils import logger
 
+# -------------------- MySQL Connection --------------------
+def get_db_connection():
+    connection = mysql.connector.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        port=DB_PORT
+    )
+    return connection
+
+# -------------------- Fetch New Traffic Data --------------------
+def fetch_new_traffic_data(last_time):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = f"""
+        SELECT * FROM {NETWORK_TRAFFIC_TABLE}
+        WHERE log_time > %s
+        ORDER BY log_time ASC
+    """
+    cursor.execute(query, (last_time,))
+    rows = cursor.fetchall()
+    conn.close()
+    if rows:
+        return pd.DataFrame(rows)
+    return pd.DataFrame()  # empty dataframe if no new data
+
+# -------------------- Isolation Forest Anomaly Detection --------------------
 def detect_anomalies_isolation_forest(data, contamination=0.1, feature_columns=None):
     """
     Detects anomalies using Isolation Forest algorithm.
@@ -69,106 +104,50 @@ def detect_anomalies_isolation_forest(data, contamination=0.1, feature_columns=N
         return data
 
     except Exception as e:
-        logger.error(f"Error in anomaly detection: {e}")
+        logger.error(f"Error in Isolation Forest anomaly detection: {e}")
         return None
 
+# -------------------- Statistical Anomaly Detection --------------------
 def detect_anomalies_statistical(data, threshold=3):
-    """
-    Detects anomalies using statistical methods (Z-score).
-
-    Args:
-        data (pd.DataFrame): Input data.
-        threshold (float): Z-score threshold for anomaly detection.
-
-    Returns:
-        pd.DataFrame: Data with anomaly labels.
-    """
-    try:
-        numerical_features = ['packet_size', 'duration']
-        data = data.copy()
-
-        for feature in numerical_features:
-            if feature in data.columns:
-                mean = data[feature].mean()
-                std = data[feature].std()
-                z_scores = np.abs((data[feature] - mean) / std)
-                data[f'{feature}_z_score'] = z_scores
-                data[f'{feature}_anomaly'] = z_scores > threshold
-
-        # Overall anomaly if any feature is anomalous
-        data['statistical_anomaly'] = data[[f'{feature}_anomaly' for feature in numerical_features if f'{feature}_anomaly' in data.columns]].any(axis=1)
-
-        anomaly_count = sum(data['statistical_anomaly'])
-        logger.info(f"Statistical anomaly detection completed. Detected {anomaly_count} anomalies out of {len(data)} samples")
+    if data.empty:
         return data
 
-    except Exception as e:
-        logger.error(f"Error in statistical anomaly detection: {e}")
-        return None
+    numerical_features = ['packet_size']
+    data = data.copy()
 
-def evaluate_anomaly_detection(true_labels, predicted_labels):
-    """
-    Evaluates anomaly detection performance.
+    for feature in numerical_features:
+        if feature not in data.columns:
+            continue
+        mean = data[feature].mean()
+        std = data[feature].std()
+        z_scores = np.abs((data[feature] - mean) / std)
+        data[f'{feature}_anomaly'] = z_scores > threshold
 
-    Args:
-        true_labels: Ground truth labels.
-        predicted_labels: Predicted labels.
+    anomaly_cols = [f'{f}_anomaly' for f in numerical_features if f'{f}_anomaly' in data.columns]
+    if anomaly_cols:
+        data['statistical_anomaly'] = data[anomaly_cols].any(axis=1)
+        data['prediction'] = np.where(data['statistical_anomaly'], 1, data['prediction'])
+        data['traffic_type'] = np.where(data['statistical_anomaly'], 'anomaly', data['traffic_type'])
 
-    Returns:
-        dict: Evaluation metrics.
-    """
-    try:
-        # Convert to binary (1 for anomaly, 0 for normal)
-        true_binary = [1 if label == 'anomaly' else 0 for label in true_labels]
-        pred_binary = [1 if label == 'anomaly' else 0 for label in predicted_labels]
+    return data
 
-        report = classification_report(true_binary, pred_binary, output_dict=True)
-        cm = confusion_matrix(true_binary, pred_binary)
+# -------------------- Insert Predictions --------------------
+def insert_predictions(data):
+    if data.empty:
+        logger.info("No new data to insert.")
+        return
 
-        logger.info("Anomaly detection evaluation completed")
-        logger.info(f"Confusion Matrix:\n{cm}")
-        logger.info(f"Classification Report:\n{classification_report(true_binary, pred_binary)}")
-
-        return {
-            'classification_report': report,
-            'confusion_matrix': cm.tolist()
-        }
-
-    except Exception as e:
-        logger.error(f"Error in anomaly detection evaluation: {e}")
-        return None
-
-def save_anomaly_model(model, filename='anomaly_model.pkl'):
-    """
-    Saves the anomaly detection model.
-
-    Args:
-        model: Trained model.
-        filename (str): Filename to save the model.
-    """
-    try:
-        joblib.dump(model, filename)
-        logger.info(f"Anomaly model saved to {filename}")
-    except Exception as e:
-        logger.error(f"Error saving anomaly model: {e}")
-
-def load_anomaly_model(filename='anomaly_model.pkl'):
-    """
-    Loads the anomaly detection model.
-
-    Args:
-        filename (str): Filename to load the model from.
-
-    Returns:
-        model: Loaded model.
-    """
-    try:
-        model = joblib.load(filename)
-        logger.info(f"Anomaly model loaded from {filename}")
-        return model
-    except Exception as e:
-        logger.error(f"Error loading anomaly model: {e}")
-        return None
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    for _, row in data.iterrows():
+        cursor.execute(f"""
+            INSERT INTO {PREDICTION_ANOMALY_TABLE}
+            (log_time, source_ip, prediction, anomaly_score, traffic_type)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (row['log_time'], row['source_ip'], row['prediction'], row['anomaly_score'], row['traffic_type']))
+    conn.commit()
+    conn.close()
+    logger.info(f"Inserted {len(data)} new anomaly predictions.")
 
 # Supervised Learning Functions
 
@@ -277,20 +256,29 @@ def predict_anomalies_supervised(data, model, scaler, feature_columns):
         logger.error(f"Error in supervised prediction: {e}")
         return None
 
+# -------------------- Main Execution --------------------
 if __name__ == "__main__":
-    # Example usage
-    from data_ingestion import fetch_network_traffic_data
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
-    data = fetch_network_traffic_data()
-    if data is not None:
-        # Isolation Forest detection
-        data_with_anomalies = detect_anomalies_isolation_forest(data)
+    # Get last timestamp already processed in predictions
+    cursor.execute(f"SELECT MAX(log_time) FROM {PREDICTION_ANOMALY_TABLE}")
+    last_prediction_time = cursor.fetchone()[0]
 
-        # Statistical detection
-        data_with_anomalies = detect_anomalies_statistical(data_with_anomalies)
+    # If no previous predictions, start from 10 Dec 2025
+    if last_prediction_time is None:
+        last_prediction_time = datetime(2025, 12, 10, 15, 4, 55)
 
-        if 'label' in data_with_anomalies.columns:
-            evaluation = evaluate_anomaly_detection(data_with_anomalies['label'], data_with_anomalies['anomaly_label'])
-            print("Evaluation results:", evaluation)
+    cursor.close()
+    conn.close()
+
+    # Fetch new traffic data
+    new_data = fetch_new_traffic_data(last_prediction_time)
+    if new_data.empty:
+        logger.info("No new network traffic data to process.")
     else:
-        logger.error("No data available for anomaly detection")
+        # Run anomaly detection
+        new_data = detect_anomalies_isolation_forest(new_data)
+        new_data = detect_anomalies_statistical(new_data)
+        insert_predictions(new_data)
+        logger.info("Anomaly detection completed for new data.")

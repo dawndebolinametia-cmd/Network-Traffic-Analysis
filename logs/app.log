@@ -1,6 +1,7 @@
 2025-12-16 21:34:57,627 - ml_pipeline - INFO - Anomaly detection completed. Detected 200 anomalies out of 1000 samples
 2025-12-16 21:36:07,251 - ml_pipeline - INFO - Anomaly detection completed. Detected 200 anomalies out of 1000 samples
 2025-12-16 21:38:48,924 - ml_pipeline - INFO - Anomaly detection completed. Detected 200 anomalies out of 1000 samples
+<<<<<<< HEAD
 2025-12-17 20:45:04,641 - ml_pipeline - INFO - Starting Unsupervised Discovery Phase...
 2025-12-17 20:45:04,644 - ml_pipeline - INFO - Loaded 1000 records from network_traffic.csv
 2025-12-17 20:45:04,645 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
@@ -53,3 +54,16 @@
 2025-12-17 20:54:59,495 - ml_pipeline - INFO - Aggregated data into 25 hourly records
 2025-12-17 20:54:59,609 - ml_pipeline - INFO - Anomaly detection completed. Detected 3 anomalies out of 25 samples
 2025-12-17 20:54:59,610 - ml_pipeline - INFO - Unsupervised anomaly detection completed. Detected 3 anomalous hours out of 25 hours
+=======
+2025-12-17 11:04:54,657 - ml_pipeline - INFO - Successfully fetched 0 rows from network_traffic
+2025-12-17 11:04:54,729 - ml_pipeline - ERROR - Error in anomaly detection: Found array with 0 sample(s) (shape=(0, 2)) while a minimum of 1 is required by StandardScaler.
+2025-12-17 11:04:54,729 - ml_pipeline - ERROR - Error in statistical anomaly detection: 'NoneType' object has no attribute 'copy'
+>>>>>>> 9b41392c43bf392299c4152b41b1dea8feed89f1
+2025-12-17 21:17:29,795 - ml_pipeline - INFO - Starting Unsupervised Anomaly Detection on Hourly Data...
+2025-12-17 21:17:29,808 - ml_pipeline - INFO - Aggregated data into 25 hourly records
+2025-12-17 21:17:29,917 - ml_pipeline - INFO - Anomaly detection completed. Detected 3 anomalies out of 25 samples
+2025-12-17 21:17:29,917 - ml_pipeline - INFO - Unsupervised anomaly detection completed. Detected 3 anomalous hours out of 25 hours
+2025-12-17 21:33:52,052 - ml_pipeline - INFO - Starting Unsupervised Anomaly Detection on Hourly Data...
+2025-12-17 21:33:52,114 - ml_pipeline - INFO - Aggregated data into 25 hourly records
+2025-12-17 21:33:52,553 - ml_pipeline - INFO - Anomaly detection completed. Detected 3 anomalies out of 25 samples
+2025-12-17 21:33:52,555 - ml_pipeline - INFO - Unsupervised anomaly detection completed. Detected 3 anomalous hours out of 25 hours
