@@ -1,9 +1,15 @@
 # Database Configuration
-DB_HOST = 'localhost'
-DB_USER = 'root'
-DB_PASSWORD = '12345'
+DB_HOST = '127.0.0.1'          
+DB_USER = 'debbie'             
+DB_PASSWORD = 'Anime#210305'   
 DB_NAME = 'analytics_data'
 DB_PORT = 3306
+
+NETWORK_TRAFFIC_TABLE = 'network_traffic'
+PREDICTION_ANOMALY_TABLE = 'prediction_anomaly'
+TRAFFIC_DATA_TABLE = NETWORK_TRAFFIC_TABLE
+
+
 
 # Table Names
 NETWORK_TRAFFIC_TABLE = 'network_traffic'
