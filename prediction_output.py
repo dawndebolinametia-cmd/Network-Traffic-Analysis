@@ -54,6 +54,12 @@ def insert_predictions_to_prediction_anomaly(csv_path: str, table_name: str = 'p
         # Read the CSV file
         df = pd.read_csv(csv_path)
 
+        # Map columns: log_time -> timestamp, prediction -> anomaly_flag, anomaly_score -> diff_seconds
+        # Add dummy source_ip
+        df['source_ip'] = '192.168.1.1'  # dummy IP
+        df = df.rename(columns={'log_time': 'timestamp', 'prediction': 'anomaly_flag', 'anomaly_score': 'diff_seconds'})
+        df = df[['source_ip', 'timestamp', 'anomaly_flag', 'diff_seconds']]
+
         connection = mysql.connector.connect(
             host=DB_HOST,
             user=DB_USER,
@@ -89,4 +95,4 @@ def save_predictions(predictions_df: pd.DataFrame, csv_path: str = 'reports/pred
 
 if __name__ == "__main__":
     # Insert prediction_anomaly data
-    insert_predictions_to_prediction_anomaly('prediction_anomaly.csv')
+    insert_predictions_to_prediction_anomaly('reports/predictions.csv')

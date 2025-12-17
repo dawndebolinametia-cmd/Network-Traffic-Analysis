@@ -1,3 +1,55 @@
 2025-12-16 21:34:57,627 - ml_pipeline - INFO - Anomaly detection completed. Detected 200 anomalies out of 1000 samples
 2025-12-16 21:36:07,251 - ml_pipeline - INFO - Anomaly detection completed. Detected 200 anomalies out of 1000 samples
 2025-12-16 21:38:48,924 - ml_pipeline - INFO - Anomaly detection completed. Detected 200 anomalies out of 1000 samples
+2025-12-17 20:45:04,641 - ml_pipeline - INFO - Starting Unsupervised Discovery Phase...
+2025-12-17 20:45:04,644 - ml_pipeline - INFO - Loaded 1000 records from network_traffic.csv
+2025-12-17 20:45:04,645 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
+2025-12-17 20:45:04,645 - ml_pipeline - ERROR - Unsupervised discovery phase failed
+2025-12-17 20:45:04,646 - ml_pipeline - INFO - Starting Supervised Prediction Phase...
+2025-12-17 20:45:04,821 - ml_pipeline - INFO - Supervised model training completed. Test accuracy: 1.0000
+2025-12-17 20:45:04,821 - ml_pipeline - INFO - Supervised model training completed successfully
+2025-12-17 20:45:04,821 - ml_pipeline - INFO - Starting Hybrid Prediction Pipeline...
+2025-12-17 20:45:04,824 - ml_pipeline - INFO - Starting Unsupervised Discovery Phase...
+2025-12-17 20:45:04,827 - ml_pipeline - INFO - Loaded 1000 records from network_traffic.csv
+2025-12-17 20:45:04,828 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
+2025-12-17 20:45:04,828 - ml_pipeline - ERROR - Unsupervised discovery phase failed
+2025-12-17 20:45:04,828 - ml_pipeline - ERROR - Unsupervised phase failed in hybrid pipeline
+2025-12-17 20:45:27,272 - ml_pipeline - INFO - Starting Unsupervised Discovery Phase...
+2025-12-17 20:45:27,284 - ml_pipeline - INFO - Loaded 1000 records from network_traffic.csv
+2025-12-17 20:45:27,286 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
+2025-12-17 20:45:27,287 - ml_pipeline - ERROR - Unsupervised discovery phase failed
+2025-12-17 20:45:27,288 - ml_pipeline - INFO - Starting Supervised Prediction Phase...
+2025-12-17 20:45:27,889 - ml_pipeline - INFO - Supervised model training completed. Test accuracy: 1.0000
+2025-12-17 20:45:27,890 - ml_pipeline - INFO - Supervised model training completed successfully
+2025-12-17 20:45:27,890 - ml_pipeline - INFO - Starting Hybrid Prediction Pipeline...
+2025-12-17 20:45:27,898 - ml_pipeline - INFO - Starting Unsupervised Discovery Phase...
+2025-12-17 20:45:27,909 - ml_pipeline - INFO - Loaded 1000 records from network_traffic.csv
+2025-12-17 20:45:27,911 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
+2025-12-17 20:45:27,911 - ml_pipeline - ERROR - Unsupervised discovery phase failed
+2025-12-17 20:45:27,912 - ml_pipeline - ERROR - Unsupervised phase failed in hybrid pipeline
+2025-12-17 20:46:16,131 - ml_pipeline - INFO - Starting Unsupervised Discovery Phase...
+2025-12-17 20:46:16,135 - ml_pipeline - INFO - Loaded 1000 records from network_traffic.csv
+2025-12-17 20:46:16,136 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
+2025-12-17 20:46:16,136 - ml_pipeline - ERROR - Unsupervised discovery phase failed
+2025-12-17 20:46:16,136 - ml_pipeline - INFO - Starting Supervised Prediction Phase...
+2025-12-17 20:46:16,297 - ml_pipeline - INFO - Supervised model training completed. Test accuracy: 1.0000
+2025-12-17 20:46:16,298 - ml_pipeline - INFO - Supervised model training completed successfully
+2025-12-17 20:46:16,298 - ml_pipeline - INFO - Starting Hybrid Prediction Pipeline...
+2025-12-17 20:46:16,302 - ml_pipeline - INFO - Starting Unsupervised Discovery Phase...
+2025-12-17 20:46:16,306 - ml_pipeline - INFO - Loaded 1000 records from network_traffic.csv
+2025-12-17 20:46:16,307 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
+2025-12-17 20:46:16,308 - ml_pipeline - ERROR - Unsupervised discovery phase failed
+2025-12-17 20:46:16,308 - ml_pipeline - ERROR - Unsupervised phase failed in hybrid pipeline
+2025-12-17 20:53:28,633 - ml_pipeline - INFO - Starting Unsupervised Anomaly Detection on Hourly Data...
+2025-12-17 20:53:28,664 - ml_pipeline - INFO - Aggregated data into 25 hourly records
+2025-12-17 20:53:28,666 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
+2025-12-17 20:53:28,667 - ml_pipeline - ERROR - Unsupervised anomaly detection failed
+2025-12-17 20:54:12,437 - ml_pipeline - INFO - Aggregated data into 25 hourly records
+2025-12-17 20:54:31,689 - ml_pipeline - INFO - Starting Unsupervised Anomaly Detection on Hourly Data...
+2025-12-17 20:54:31,703 - ml_pipeline - INFO - Aggregated data into 25 hourly records
+2025-12-17 20:54:31,704 - ml_pipeline - ERROR - Error in anomaly detection: "None of [Index(['response_code', 'bytes_sent'], dtype='object')] are in the [columns]"
+2025-12-17 20:54:31,704 - ml_pipeline - ERROR - Unsupervised anomaly detection failed
+2025-12-17 20:54:59,482 - ml_pipeline - INFO - Starting Unsupervised Anomaly Detection on Hourly Data...
+2025-12-17 20:54:59,495 - ml_pipeline - INFO - Aggregated data into 25 hourly records
+2025-12-17 20:54:59,609 - ml_pipeline - INFO - Anomaly detection completed. Detected 3 anomalies out of 25 samples
+2025-12-17 20:54:59,610 - ml_pipeline - INFO - Unsupervised anomaly detection completed. Detected 3 anomalous hours out of 25 hours

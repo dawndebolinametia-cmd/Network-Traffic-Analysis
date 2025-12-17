@@ -1,15 +1,14 @@
-# TODO: Generate Accurate Prediction CSVs from Synthetic Data
+# TODO: Network Traffic Anomaly Detection Pipeline
 
 ## Completed Tasks
-- [x] Modify `anomaly_detection.py` to return prediction as 0/1 instead of 1/-1
-- [x] Update `generate_synthetic_predictions.py` to use actual anomaly detection instead of random
-- [x] Ensure predictions include both 0 and 1 (adjust contamination if needed)
-- [x] Update `prediction_output.py` to insert into prediction_anomaly table
-- [x] Update `config.py` to change DB_NAME to 'analytics_data'
+- [x] Revert pipeline to single unsupervised anomaly detection approach using Isolation Forest on hourly network traffic data
+- [x] Update `hybrid_anomaly_detection.py` to focus on unsupervised detection with hourly aggregation
+- [x] Remove supervised learning components and hybrid approach
+- [x] Implement hourly data aggregation (packet counts, sizes, unique IPs)
+- [x] Apply Isolation Forest directly to aggregated hourly features
 
 ## Pending Tasks
-- [x] Run the updated `generate_synthetic_predictions.py` to generate predictions CSV
-- [x] Verify timestamps in synthetic data match for SQL joins
-- [x] Test SQL queries to ensure non-zero counts (e.g., COUNT(*) WHERE prediction = 0 and prediction = 1) - Note: Insertion script ran successfully, assuming counts are non-zero based on CSV distribution (800 normal, 200 anomalies)
-- [x] Confirm Metabase compatibility by checking data types and column names
-- [x] Run automated pipeline to test end-to-end flow
+- [ ] Test the reverted unsupervised pipeline on network_traffic.csv
+- [ ] Verify hourly aggregation produces expected features
+- [ ] Confirm anomaly detection results are reasonable
+- [ ] Update any dependent scripts that reference the old hybrid approach

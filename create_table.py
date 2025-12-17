@@ -34,17 +34,23 @@ try:
     """)
     print(f"Table '{PREDICTION_ANOMALY_TABLE}' created successfully!")
 
-    # Populate network_traffic table with synthetic data
-    for i in range(50):
-        source_ip = f"192.168.1.{random.randint(1, 254)}"
-        dest_ip = f"10.0.0.{random.randint(1, 254)}"
-        timestamp = datetime.now() - timedelta(minutes=random.randint(0, 1000))
-        packet_size = random.randint(40, 1500)
+    # Truncate tables to repopulate with hourly data
+    cursor.execute(f"TRUNCATE TABLE {NETWORK_TRAFFIC_TABLE}")
+    cursor.execute(f"TRUNCATE TABLE {PREDICTION_ANOMALY_TABLE}")
 
-        cursor.execute(f"""
-            INSERT INTO {NETWORK_TRAFFIC_TABLE} (source_ip, dest_ip, timestamp, packet_size)
-            VALUES (%s, %s, %s, %s)
-        """, (source_ip, dest_ip, timestamp, packet_size))
+    # Populate network_traffic table with hourly synthetic data
+    base_time = datetime.now().replace(minute=0, second=0, microsecond=0)
+    for hour in range(24):
+        timestamp = base_time - timedelta(hours=hour)
+        for i in range(10):  # 10 records per hour
+            source_ip = f"192.168.1.{random.randint(1, 254)}"
+            dest_ip = f"10.0.0.{random.randint(1, 254)}"
+            packet_size = random.randint(40, 1500)
+
+            cursor.execute(f"""
+                INSERT INTO {NETWORK_TRAFFIC_TABLE} (source_ip, dest_ip, timestamp, packet_size)
+                VALUES (%s, %s, %s, %s)
+            """, (source_ip, dest_ip, timestamp, packet_size))
 
     # Populate prediction_anomaly table
     cursor.execute(f"SELECT source_ip, timestamp FROM {NETWORK_TRAFFIC_TABLE}")
