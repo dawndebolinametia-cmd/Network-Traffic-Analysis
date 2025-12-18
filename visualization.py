@@ -342,8 +342,85 @@ def create_metabase_dataset(data, token, url, dataset_name="Network Traffic Pred
         logger.error(f"Failed to create Metabase dataset: {e}")
         return None
 
+def create_metabase_question(token, url, database_id, table_name, question_name):
+    """
+    Create a Metabase question for a table.
+
+    Args:
+        token (str): Metabase session token
+        url (str): Metabase URL
+        database_id (int): Database ID
+        table_name (str): Table name
+        question_name (str): Name for the question
+
+    Returns:
+        int: Question ID or None
+    """
+    try:
+        headers = {"X-Metabase-Session": token, "Content-Type": "application/json"}
+        question_url = f"{url}/api/card"
+
+        query = {
+            "database": database_id,
+            "query": {"source-table": f"card__{table_name}"},  # Assuming table is already synced
+            "type": "query",
+            "name": question_name
+        }
+
+        response = requests.post(question_url, headers=headers, json=query)
+        response.raise_for_status()
+        question_id = response.json().get("id")
+        logger.info(f"Created Metabase question '{question_name}' with ID {question_id}")
+        return question_id
+    except Exception as e:
+        logger.error(f"Failed to create Metabase question: {e}")
+        return None
+
+def create_metabase_dashboard(token, url, dashboard_name, question_ids):
+    """
+    Create a Metabase dashboard with questions.
+
+    Args:
+        token (str): Metabase session token
+        url (str): Metabase URL
+        dashboard_name (str): Name for the dashboard
+        question_ids (list): List of question IDs to add
+
+    Returns:
+        int: Dashboard ID or None
+    """
+    try:
+        headers = {"X-Metabase-Session": token, "Content-Type": "application/json"}
+        dashboard_url = f"{url}/api/dashboard"
+
+        dashboard_data = {
+            "name": dashboard_name,
+            "description": "Network Traffic Analysis Dashboard"
+        }
+
+        response = requests.post(dashboard_url, headers=headers, json=dashboard_data)
+        response.raise_for_status()
+        dashboard_id = response.json().get("id")
+        logger.info(f"Created Metabase dashboard '{dashboard_name}' with ID {dashboard_id}")
+
+        # Add questions to dashboard
+        for i, qid in enumerate(question_ids):
+            card_data = {
+                "cardId": qid,
+                "row": i // 2,
+                "col": (i % 2) * 6,
+                "sizeX": 6,
+                "sizeY": 4
+            }
+            add_card_url = f"{url}/api/dashboard/{dashboard_id}/cards"
+            requests.post(add_card_url, headers=headers, json=card_data)
+
+        return dashboard_id
+    except Exception as e:
+        logger.error(f"Failed to create Metabase dashboard: {e}")
+        return None
+
 def update_metabase_dashboard(data, metabase_url, username, password, database_id=None, dashboard_id=None):
-    
     """
     Update Metabase dashboard with prediction data.
 
@@ -364,17 +441,25 @@ def update_metabase_dashboard(data, metabase_url, username, password, database_i
             logger.error("Cannot update Metabase dashboard without authentication")
             return False
 
-        # Create/update dataset
-        dataset_path = create_metabase_dataset(data, token, metabase_url)
-        if not dataset_path:
-            logger.error("Failed to create dataset in Metabase")
+        from config import METABASE_DATABASE_ID, NETWORK_TRAFFIC_TABLE, PREDICTIONS_TABLE
+        database_id = database_id or METABASE_DATABASE_ID
+
+        # Create questions for tables
+        traffic_question = create_metabase_question(token, metabase_url, database_id, NETWORK_TRAFFIC_TABLE, "Network Traffic Data")
+        pred_question = create_metabase_question(token, metabase_url, database_id, PREDICTIONS_TABLE, "Traffic Predictions")
+
+        if traffic_question and pred_question:
+            # Create dashboard if not exists
+            dashboard_name = "Network Traffic Analysis"
+            dashboard_id = create_metabase_dashboard(token, metabase_url, dashboard_name, [traffic_question, pred_question])
+            if dashboard_id:
+                logger.info(f"Dashboard '{dashboard_name}' created/updated with ID {dashboard_id}")
+            else:
+                logger.error("Failed to create dashboard")
+                return False
+        else:
+            logger.error("Failed to create questions")
             return False
-
-     
-
-        # For this implementation, we'll save the data and log the path
-        logger.info(f"Metabase data prepared at: {dataset_path}")
-        logger.info("To view in Metabase: Import the CSV file as a new data source")
 
         # Save summary statistics for dashboard
         summary = {

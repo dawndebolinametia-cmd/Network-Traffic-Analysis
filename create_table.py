@@ -1,77 +1,61 @@
-import mysql.connector
-from config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, NETWORK_TRAFFIC_TABLE, PREDICTION_ANOMALY_TABLE
-from datetime import datetime, timedelta
-import random
+import pymysql
+from config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, NETWORK_TRAFFIC_TABLE, PREDICTIONS_TABLE
 
-try:
-    connection = mysql.connector.connect(
-        host=DB_HOST, user=DB_USER,
-        password=DB_PASSWORD, database=DB_NAME, port=DB_PORT
-    )
-    cursor = connection.cursor()
+def create_tables():
+    try:
+        conn = pymysql.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME,
+            port=DB_PORT
+        )
+        cursor = conn.cursor()
 
-    # Create network_traffic table
-    cursor.execute(f"""
+        cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS {NETWORK_TRAFFIC_TABLE} (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            source_ip VARCHAR(45),
-            dest_ip VARCHAR(45),
+            source_ip VARCHAR(15),
+            dest_ip VARCHAR(15),
             timestamp DATETIME,
             packet_size INT
         )
-    """)
-    print(f"Table '{NETWORK_TRAFFIC_TABLE}' created successfully!")
-
-    # Create prediction_anomaly table
-    cursor.execute(f"""
-        CREATE TABLE IF NOT EXISTS {PREDICTION_ANOMALY_TABLE} (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            source_ip VARCHAR(45),
-            timestamp DATETIME,
-            anomaly_flag INT,
-            diff_seconds FLOAT
-        )
-    """)
-    print(f"Table '{PREDICTION_ANOMALY_TABLE}' created successfully!")
-
-    # Truncate tables to repopulate with hourly data
-    cursor.execute(f"TRUNCATE TABLE {NETWORK_TRAFFIC_TABLE}")
-    cursor.execute(f"TRUNCATE TABLE {PREDICTION_ANOMALY_TABLE}")
-
-    # Populate network_traffic table with hourly synthetic data
-    base_time = datetime.now().replace(minute=0, second=0, microsecond=0)
-    for hour in range(24):
-        timestamp = base_time - timedelta(hours=hour)
-        for i in range(10):  # 10 records per hour
-            source_ip = f"192.168.1.{random.randint(1, 254)}"
-            dest_ip = f"10.0.0.{random.randint(1, 254)}"
-            packet_size = random.randint(40, 1500)
-
-            cursor.execute(f"""
-                INSERT INTO {NETWORK_TRAFFIC_TABLE} (source_ip, dest_ip, timestamp, packet_size)
-                VALUES (%s, %s, %s, %s)
-            """, (source_ip, dest_ip, timestamp, packet_size))
-
-    # Populate prediction_anomaly table
-    cursor.execute(f"SELECT source_ip, timestamp FROM {NETWORK_TRAFFIC_TABLE}")
-    rows = cursor.fetchall()
-
-    for row in rows:
-        source_ip, timestamp = row
-        anomaly_flag = random.choice([0, 1])
-        diff_seconds = random.uniform(0.1, 5.0)
+        """)
+        print(f"Created table {NETWORK_TRAFFIC_TABLE}")
 
         cursor.execute(f"""
-            INSERT INTO {PREDICTION_ANOMALY_TABLE} (source_ip, timestamp, anomaly_flag, diff_seconds)
-            VALUES (%s, %s, %s, %s)
-        """, (source_ip, timestamp, anomaly_flag, diff_seconds))
+        CREATE TABLE IF NOT EXISTS {PREDICTIONS_TABLE} (
+            log_time DATETIME,
+            prediction INT,
+            anomaly_score FLOAT,
+            traffic_type VARCHAR(10)
+        )
+        """)
+        print(f"Created table {PREDICTIONS_TABLE}")
 
-    connection.commit()
-    print("Tables populated successfully!")
+        conn.commit()
 
-except Exception as e:
-    print("Error:", e)
+        # Verify table existence
+        cursor.execute(f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{DB_NAME}' AND table_name = '{NETWORK_TRAFFIC_TABLE}'")
+        if cursor.fetchone()[0] == 0:
+            print(f"Error: Table {NETWORK_TRAFFIC_TABLE} does not exist")
+        else:
+            cursor.execute(f"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = '{DB_NAME}' AND table_name = '{NETWORK_TRAFFIC_TABLE}'")
+            nt_columns = cursor.fetchone()[0]
+            print(f"Table {NETWORK_TRAFFIC_TABLE} exists with {nt_columns} columns")
 
-finally:
-    cursor.close()
-    connection.close()
+        cursor.execute(f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{DB_NAME}' AND table_name = '{PREDICTIONS_TABLE}'")
+        if cursor.fetchone()[0] == 0:
+            print(f"Error: Table {PREDICTIONS_TABLE} does not exist")
+        else:
+            cursor.execute(f"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = '{DB_NAME}' AND table_name = '{PREDICTIONS_TABLE}'")
+            pred_columns = cursor.fetchone()[0]
+            print(f"Table {PREDICTIONS_TABLE} exists with {pred_columns} columns")
+
+        cursor.close()
+        conn.close()
+
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+
+if __name__ == "__main__":
+    create_tables()
