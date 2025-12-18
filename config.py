@@ -61,7 +61,14 @@ def load_isolation_forest_model():
         print(f"Error loading Isolation Forest model: {e}")
         return None
 
-ISOLATION_FOREST_MODEL = load_isolation_forest_model()
+_ISO_MODEL = None
+
+def get_isolation_forest_model():
+    global _ISO_MODEL
+    if _ISO_MODEL is None:
+        _ISO_MODEL = load_isolation_forest_model()
+    return _ISO_MODEL
+
 
 # Deterministic generation functions for synthetic data
 def generate_packet_size(hour):

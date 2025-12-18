@@ -76,3 +76,4 @@
 2025-12-18 15:33:33,857 - ml_pipeline - INFO - Starting Metabase dashboard update...
 2025-12-18 15:33:44,275 - ml_pipeline - ERROR - Failed to authenticate with Metabase: 401 Client Error: Unauthorized for url: http://localhost:3000/api/session
 2025-12-18 15:33:44,275 - ml_pipeline - ERROR - Cannot update Metabase dashboard without authentication
+2025-12-18 16:10:01,332 - ml_pipeline - INFO - Isolation Forest model trained and saved to C:\Users\HP\Network-Traffic-Analysis\models\isolation_forest_model.pkl
