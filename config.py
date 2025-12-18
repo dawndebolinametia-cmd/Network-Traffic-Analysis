@@ -41,7 +41,7 @@ RETRAIN_THRESHOLD = 0.05  # Retrain if accuracy drops by more than 5%
 METABASE_URL = 'http://localhost:3000'
 METABASE_USERNAME = 'Debbie'
 METABASE_PASSWORD = 'Anime#210305'
-METABASE_DATABASE_ID = 1  # Assuming the MySQL database ID in Metabase is 1; adjust if different
+METABASE_DATABASE_ID = 1  
 
 # Time-handling logic (dynamic, runtime-driven)
 def get_current_time():
@@ -49,16 +49,19 @@ def get_current_time():
 
 CURRENT_TIME = get_current_time()
 
-# Live-feed anomaly rules derived from network_traffic.csv
-def derive_anomaly_rules():
-    df = pd.read_csv(NETWORK_TRAFFIC_CSV)
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
-    mean_packet = df['packet_size'].mean()
-    std_packet = df['packet_size'].std()
-    threshold = mean_packet + 2 * std_packet
-    return mean_packet, std_packet, threshold
+# Load Isolation Forest model for anomaly detection
+ISOLATION_FOREST_MODEL_PATH = os.path.join(BASE_DIR, 'models', 'isolation_forest_model.pkl')
 
-MEAN_PACKET, STD_PACKET, ANOMALY_THRESHOLD = derive_anomaly_rules()
+def load_isolation_forest_model():
+    """Load the trained Isolation Forest model."""
+    try:
+        import joblib
+        return joblib.load(ISOLATION_FOREST_MODEL_PATH)
+    except Exception as e:
+        print(f"Error loading Isolation Forest model: {e}")
+        return None
+
+ISOLATION_FOREST_MODEL = load_isolation_forest_model()
 
 # Deterministic generation functions for synthetic data
 def generate_packet_size(hour):
@@ -73,8 +76,26 @@ def generate_ips(hour):
     dest_ip = f"192.168.{(ip_base + 1) % 256}.2"
     return source_ip, dest_ip
 
-def is_anomaly(packet_size):
-    return packet_size > ANOMALY_THRESHOLD
+def is_anomaly(packet_size, hour):
+    """
+    Determine if a packet is an anomaly using Isolation Forest.
+    Returns True if anomaly (outlier), False otherwise.
+    """
+    if ISOLATION_FOREST_MODEL is None:
+        raise ValueError("Isolation Forest model not loaded")
+    # Prepare features
+    features = [[packet_size, hour]]
+    prediction = ISOLATION_FOREST_MODEL.predict(features)
+    return prediction[0] == -1  # -1 indicates anomaly
 
-def calculate_anomaly_score(packet_size):
-    return (packet_size - MEAN_PACKET) / STD_PACKET
+def calculate_anomaly_score(packet_size, hour):
+    """
+    Calculate anomaly score using Isolation Forest decision function.
+    Higher scores indicate more anomalous behavior.
+    """
+    if ISOLATION_FOREST_MODEL is None:
+        raise ValueError("Isolation Forest model not loaded")
+    # Prepare features
+    features = [[packet_size, hour]]
+    score = ISOLATION_FOREST_MODEL.decision_function(features)
+    return score[0]

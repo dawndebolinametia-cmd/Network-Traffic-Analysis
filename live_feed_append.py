@@ -41,8 +41,8 @@ def append_live_data():
         })
 
         # Generate predictions row (one per hour, aligned)
-        prediction = 1 if is_anomaly(packet_size) else 0
-        anomaly_score = calculate_anomaly_score(packet_size)
+        prediction = 1 if is_anomaly(packet_size, hour.hour) else 0
+        anomaly_score = calculate_anomaly_score(packet_size, hour.hour)
         traffic_type = 'anomaly' if prediction == 1 else 'normal'
         new_rows_pred.append({
             'log_time': hour,
