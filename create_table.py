@@ -26,6 +26,10 @@ def get_mysql_type(dtype, column_name):
         else:
             return "VARCHAR(255)"
 
+def sanitize_column_name(col):
+    """Sanitize column name to be MySQL compatible."""
+    return col.replace('<', '_').replace('>', '_').replace(' ', '_').replace('-', '_')
+
 def create_network_traffic_table(df):
     """Create network traffic table based on dataframe columns."""
     conn = pymysql.connect(
@@ -43,8 +47,9 @@ def create_network_traffic_table(df):
     # Build CREATE TABLE statement
     columns_sql = []
     for col in df.columns:
+        sanitized_col = sanitize_column_name(col)
         mysql_type = get_mysql_type(df[col].dtype, col)
-        columns_sql.append(f"`{col}` {mysql_type}")
+        columns_sql.append(f"`{sanitized_col}` {mysql_type}")
 
     # Add primary key
     columns_sql.insert(0, "id BIGINT AUTO_INCREMENT PRIMARY KEY")
