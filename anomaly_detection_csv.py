@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 import pymysql
 import logging
 import os
+import argparse
 from datetime import datetime
 from config import (
     DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT,
@@ -56,17 +57,23 @@ def preprocess_chunk(chunk):
         chunk['log_time'] = pd.to_datetime(chunk['TSesStart'], unit='s', errors='coerce')
         chunk['hour'] = chunk['log_time'].dt.floor('H')  # Aggregate by hour
     else:
-        chunk['log_time'] = pd.Timestamp.now()
+        chunk['log_time'] = pd.Timestamp('1970-01-01 00:00:00')
         chunk['hour'] = chunk['log_time'].dt.floor('H')
 
-    # Handle NaNs
+    # Handle NaNs as specified
+    # Numeric NaNs -> 0
     numeric_cols = chunk.select_dtypes(include=[np.number]).columns
-    chunk[numeric_cols] = chunk[numeric_cols].fillna(chunk[numeric_cols].mean())
+    chunk[numeric_cols] = chunk[numeric_cols].fillna(0)
 
-    categorical_cols = ['srcIP', 'dstIP', 'srcMAC', 'dstMAC', 'label_2', 'label_poly', 'label_poly_o']
+    # Datetime NaNs -> 1970-01-01 00:00:00
+    datetime_cols = chunk.select_dtypes(include=['datetime64']).columns
+    for col in datetime_cols:
+        chunk[col] = chunk[col].fillna(pd.Timestamp('1970-01-01 00:00:00'))
+
+    # Categorical/string NaNs -> 'unknown'
+    categorical_cols = chunk.select_dtypes(include=['object']).columns
     for col in categorical_cols:
-        if col in chunk.columns:
-            chunk[col] = chunk[col].fillna('unknown')
+        chunk[col] = chunk[col].fillna('unknown')
 
     return chunk
 
@@ -131,23 +138,20 @@ def insert_predictions(hourly_data):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Prepare data for insertion
+    # Prepare data for insertion - match table schema
     data_to_insert = []
     for _, row in hourly_data.iterrows():
         data_to_insert.append((
-            row['hour'],
-            int(row['prediction']),
-            float(row['anomaly_score']),
-            int(row.get('session_count', 0)),
-            float(row.get('BPerSecIn_mean', 0)),
-            float(row.get('BPerSecOut_sum', 0)),
-            float(row.get('BPerSecIn_sum', 0))
+            row['hour'],  # log_time
+            int(row['prediction']),  # prediction
+            float(row['anomaly_score']),  # anomaly_score
+            'network'  # traffic_type (varchar(10))
         ))
 
     sql = f"""
     INSERT INTO {PREDICTIONS_TABLE}
-    (log_time, prediction, anomaly_score, session_count, avg_packet_size, total_bytes_in, total_bytes_out)
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    (log_time, prediction, anomaly_score, traffic_type)
+    VALUES (%s, %s, %s, %s)
     """
 
     # Insert in batches
@@ -160,7 +164,14 @@ def insert_predictions(hourly_data):
             logger.info(f"Inserted {len(batch)} hourly predictions")
         except Exception as e:
             logger.error(f"Error inserting batch: {e}")
-            conn.rollback()
+            # Log the failed batch but continue
+            for row in batch:
+                try:
+                    cursor.execute(sql, row)
+                    conn.commit()
+                except Exception as row_e:
+                    logger.error(f"Error inserting row {row}: {row_e}")
+                    conn.rollback()
 
     cursor.close()
     conn.close()

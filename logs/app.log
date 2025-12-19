@@ -124,3 +124,11 @@
 2025-12-19 14:40:16,169 - ml_pipeline - INFO - Anomaly detection completed. Detected 24 anomalies out of 238 hours
 2025-12-19 14:40:16,557 - ml_pipeline - ERROR - Error inserting batch: (1054, "Unknown column 'session_count' in 'field list'")
 2025-12-19 14:40:16,560 - ml_pipeline - INFO - Anomaly detection and insertion completed
+2025-12-19 16:12:56,303 - ml_pipeline - INFO - Starting anomaly detection on CSV data
+2025-12-19 16:13:02,573 - ml_pipeline - INFO - Ensured table hourly_predictions exists
+2025-12-19 16:13:04,864 - ml_pipeline - INFO - Processing chunk 1
+2025-12-19 16:13:07,883 - ml_pipeline - INFO - Processing chunk 2
+2025-12-19 16:13:08,032 - ml_pipeline - INFO - Total hours processed: 238
+2025-12-19 16:13:08,724 - ml_pipeline - INFO - Anomaly detection completed. Detected 24 anomalies out of 238 hours
+2025-12-19 16:13:13,763 - ml_pipeline - INFO - Inserted 238 hourly predictions
+2025-12-19 16:13:13,765 - ml_pipeline - INFO - Anomaly detection and insertion completed
