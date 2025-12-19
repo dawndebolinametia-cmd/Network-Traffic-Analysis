@@ -77,3 +77,27 @@
 2025-12-18 15:33:44,275 - ml_pipeline - ERROR - Failed to authenticate with Metabase: 401 Client Error: Unauthorized for url: http://localhost:3000/api/session
 2025-12-18 15:33:44,275 - ml_pipeline - ERROR - Cannot update Metabase dashboard without authentication
 2025-12-18 16:10:01,332 - ml_pipeline - INFO - Isolation Forest model trained and saved to C:\Users\HP\Network-Traffic-Analysis\models\isolation_forest_model.pkl
+2025-12-19 11:25:50,075 - INFO - === STEP 1: Data Ingestion & Preprocessing ===
+2025-12-19 11:25:50,080 - ERROR - Data ingestion failed: name 'os' is not defined
+2025-12-19 11:25:50,081 - ERROR - Pipeline failed: name 'os' is not defined
+2025-12-19 11:26:17,168 - INFO - === STEP 1: Data Ingestion & Preprocessing ===
+2025-12-19 11:26:17,169 - ERROR - Data ingestion failed: name 'os' is not defined
+2025-12-19 11:26:17,169 - ERROR - Pipeline failed: name 'os' is not defined
+2025-12-19 11:27:50,448 - INFO - === STEP 1: Data Ingestion & Preprocessing ===
+2025-12-19 11:27:52,550 - ERROR - Data ingestion failed: cannot import name 'load_and_preprocess_csv' from 'csv_loader' (C:\Users\HP\Network-Traffic-Analysis\csv_loader.py)
+2025-12-19 11:27:52,550 - ERROR - Pipeline failed: cannot import name 'load_and_preprocess_csv' from 'csv_loader' (C:\Users\HP\Network-Traffic-Analysis\csv_loader.py)
+2025-12-19 11:47:46,722 - ml_pipeline - INFO - Starting data ingestion...
+2025-12-19 11:47:48,509 - ml_pipeline - INFO - Detected 904 columns in CSV
+2025-12-19 11:48:13,243 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,329 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,399 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,464 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,543 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,604 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,664 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,725 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,795 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:13,885 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:19,622 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:19,689 - ml_pipeline - ERROR - Error inserting batch: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '<In>, synCnt<In>, rstCnt<In>, pshCnt<In>, ackCnt<In>, urgCnt<In>, eceCnt<In>, cw' at line 1")
+2025-12-19 11:48:19,751 - ml_pipeline - INFO - Data ingestion completed. Total rows ingested: 0
