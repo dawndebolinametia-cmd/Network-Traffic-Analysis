@@ -1,8 +1,0 @@
-pandas
-scikit-learn
-mysql-connector-python
-pymysql
-joblib
-requests
-matplotlib
-seaborn
