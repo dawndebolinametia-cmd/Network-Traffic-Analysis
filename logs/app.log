@@ -132,3 +132,27 @@
 2025-12-19 16:13:08,724 - ml_pipeline - INFO - Anomaly detection completed. Detected 24 anomalies out of 238 hours
 2025-12-19 16:13:13,763 - ml_pipeline - INFO - Inserted 238 hourly predictions
 2025-12-19 16:13:13,765 - ml_pipeline - INFO - Anomaly detection and insertion completed
+2025-12-21 08:37:27,717 - INFO - === STEP 1: Data Ingestion & Preprocessing ===
+2025-12-21 08:37:29,180 - ERROR - Data ingestion failed: cannot import name 'load_and_preprocess_csv' from 'csv_loader' (C:\Users\debolina metia\Da\Network-Traffic-Analysis\csv_loader.py)
+2025-12-21 08:37:29,181 - ERROR - Pipeline failed: cannot import name 'load_and_preprocess_csv' from 'csv_loader' (C:\Users\debolina metia\Da\Network-Traffic-Analysis\csv_loader.py)
+2025-12-21 08:37:49,828 - INFO - === STEP 1: Data Ingestion & Preprocessing ===
+2025-12-21 08:37:51,295 - INFO - Successfully loaded and preprocessed 11445 rows from data/ASNM-NBPOv2.csv
+2025-12-21 08:37:51,295 - INFO - === STEP 2: Database Setup ===
+2025-12-21 08:37:51,300 - INFO - Starting database setup...
+2025-12-21 08:37:51,314 - ERROR - Error in database setup: (1045, "Access denied for user 'debbie'@'localhost' (using password: YES)")
+2025-12-21 08:37:51,314 - ERROR - Database setup failed: (1045, "Access denied for user 'debbie'@'localhost' (using password: YES)")
+2025-12-21 08:37:51,315 - ERROR - Pipeline failed: (1045, "Access denied for user 'debbie'@'localhost' (using password: YES)")
+2025-12-21 09:01:55,798 - INFO - === STEP 1: Data Ingestion & Preprocessing ===
+2025-12-21 09:01:56,954 - INFO - Successfully loaded and preprocessed 11445 rows from data/ASNM-NBPOv2.csv
+2025-12-21 09:01:56,954 - INFO - === STEP 2: Database Setup ===
+2025-12-21 09:01:56,955 - INFO - Starting database setup...
+2025-12-21 09:01:56,989 - ERROR - Error in database setup: (1045, "Access denied for user 'Debolina Metia'@'localhost' (using password: YES)")
+2025-12-21 09:01:56,990 - ERROR - Database setup failed: (1045, "Access denied for user 'Debolina Metia'@'localhost' (using password: YES)")
+2025-12-21 09:01:56,991 - ERROR - Pipeline failed: (1045, "Access denied for user 'Debolina Metia'@'localhost' (using password: YES)")
+2025-12-21 09:02:20,661 - INFO - === STEP 1: Data Ingestion & Preprocessing ===
+2025-12-21 09:02:21,429 - INFO - Successfully loaded and preprocessed 11445 rows from data/ASNM-NBPOv2.csv
+2025-12-21 09:02:21,429 - INFO - === STEP 2: Database Setup ===
+2025-12-21 09:02:21,431 - INFO - Starting database setup...
+2025-12-21 09:02:21,478 - ERROR - Error in database setup: (1045, "Access denied for user 'Debolina Metia'@'localhost' (using password: YES)")
+2025-12-21 09:02:21,479 - ERROR - Database setup failed: (1045, "Access denied for user 'Debolina Metia'@'localhost' (using password: YES)")
+2025-12-21 09:02:21,479 - ERROR - Pipeline failed: (1045, "Access denied for user 'Debolina Metia'@'localhost' (using password: YES)")
