@@ -24,18 +24,18 @@ def create_traffic_summary_view():
     create_sql = f"""
     CREATE VIEW traffic_summary AS
     SELECT
-        DATE(nt.tsesstart) as date,
-        HOUR(nt.tsesstart) as hour,
+        DATE(nt.TSesStart) as date,
+        HOUR(nt.TSesStart) as hour,
         COUNT(*) as session_count,
-        SUM(nt.pkts) as total_packets,
-        SUM(nt.bytes) as total_bytes,
-        AVG(nt.pkts) as avg_packets_per_session,
-        AVG(nt.bytes) as avg_bytes_per_session,
+        SUM(nt.PktPerSesIn + nt.PktPerSesOut) as total_packets,
+        SUM(nt.BPerSesIn + nt.BPerSesOut) as total_bytes,
+        AVG(nt.PktPerSesIn + nt.PktPerSesOut) as avg_packets_per_session,
+        AVG(nt.BPerSesIn + nt.BPerSesOut) as avg_bytes_per_session,
         COUNT(CASE WHEN p.prediction = 1 THEN 1 END) as anomaly_count,
         ROUND((COUNT(CASE WHEN p.prediction = 1 THEN 1 END) / COUNT(*)) * 100, 2) as anomaly_percentage
     FROM {NETWORK_TRAFFIC_TABLE} nt
     LEFT JOIN {PREDICTIONS_TABLE} p ON nt.id = p.session_id AND p.model_type = 'isolation_forest'
-    GROUP BY DATE(nt.tsesstart), HOUR(nt.tsesstart)
+    GROUP BY DATE(nt.TSesStart), HOUR(nt.TSesStart)
     ORDER BY date DESC, hour DESC
     """
 
@@ -79,7 +79,7 @@ def create_anomaly_analysis_view():
     FROM {NETWORK_TRAFFIC_TABLE} nt
     LEFT JOIN {PREDICTIONS_TABLE} p ON nt.id = p.session_id
     WHERE p.prediction = 1
-    ORDER BY p.anomaly_score ASC, nt.tsesstart DESC
+    ORDER BY p.anomaly_score ASC, nt.TSesStart DESC
     """
 
     cursor.execute(create_sql)
@@ -107,22 +107,22 @@ def create_session_stats_view():
     create_sql = f"""
     CREATE VIEW session_stats AS
     SELECT
-        nt.sip as source_ip,
-        nt.dip as dest_ip,
-        nt.sport as source_port,
-        nt.dport as dest_port,
+        nt.srcIP as source_ip,
+        nt.dstIP as dest_ip,
+        nt.srcPort as source_port,
+        nt.dstPort as dest_port,
         COUNT(*) as session_count,
-        SUM(nt.pkts) as total_packets,
-        SUM(nt.bytes) as total_bytes,
-        AVG(nt.pkts) as avg_packets,
-        AVG(nt.bytes) as avg_bytes,
-        AVG(TIMESTAMPDIFF(SECOND, nt.tsesstart, nt.tsesend)) as avg_duration_seconds,
+        SUM(nt.PktPerSesIn + nt.PktPerSesOut) as total_packets,
+        SUM(nt.BPerSesIn + nt.BPerSesOut) as total_bytes,
+        AVG(nt.PktPerSesIn + nt.PktPerSesOut) as avg_packets,
+        AVG(nt.BPerSesIn + nt.BPerSesOut) as avg_bytes,
+        AVG(nt.SessDuration) as avg_duration_seconds,
         COUNT(CASE WHEN p.prediction = 1 THEN 1 END) as anomaly_sessions,
         ROUND((COUNT(CASE WHEN p.prediction = 1 THEN 1 END) / COUNT(*)) * 100, 2) as anomaly_rate,
-        MAX(nt.tsesstart) as last_session_time
+        MAX(nt.TSesStart) as last_session_time
     FROM {NETWORK_TRAFFIC_TABLE} nt
     LEFT JOIN {PREDICTIONS_TABLE} p ON nt.id = p.session_id AND p.model_type = 'isolation_forest'
-    GROUP BY nt.sip, nt.dip, nt.sport, nt.dport
+    GROUP BY nt.srcIP, nt.dstIP, nt.srcPort, nt.dstPort
     HAVING session_count > 1
     ORDER BY session_count DESC
     """
