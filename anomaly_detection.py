@@ -310,7 +310,7 @@ def train_supervised_anomaly_model(network_traffic_path='network_traffic.csv', p
     try:
         # Load data
         traffic_data = pd.read_csv(network_traffic_path)
-        predictions_data = pd.read_csv(predictions_path)
+        predictions_data = pd.read_csv(predictions_path) #check agaian
 
         # Merge on timestamp (assuming timestamps match)
         traffic_data['timestamp'] = pd.to_datetime(traffic_data['timestamp'])
@@ -328,7 +328,7 @@ def train_supervised_anomaly_model(network_traffic_path='network_traffic.csv', p
         y = merged_data['prediction']
 
         # Encode categorical features
-        le_ip = LabelEncoder()
+        le_ip = LabelEncoder()  #check syntax again
         X['source_ip_encoded'] = le_ip.fit_transform(X['source_ip'])
         X['dest_ip_encoded'] = le_ip.fit_transform(X['dest_ip'])
         X = X[['source_ip_encoded', 'dest_ip_encoded', 'packet_size']]

@@ -132,3 +132,17 @@
 2025-12-19 16:13:08,724 - ml_pipeline - INFO - Anomaly detection completed. Detected 24 anomalies out of 238 hours
 2025-12-19 16:13:13,763 - ml_pipeline - INFO - Inserted 238 hourly predictions
 2025-12-19 16:13:13,765 - ml_pipeline - INFO - Anomaly detection and insertion completed
+2025-12-22 12:04:24,646 - ml_pipeline - INFO - Successfully fetched 1000 rows from network_traffic
+2025-12-22 12:04:24,671 - ml_pipeline - INFO - Starting full preprocessing pipeline.
+2025-12-22 12:04:24,671 - ml_pipeline - INFO - Starting data cleaning.
+2025-12-22 12:04:24,812 - ml_pipeline - INFO - Data cleaned: (1000, 4) -> (1000, 4)
+2025-12-22 12:04:24,813 - ml_pipeline - INFO - Starting data anonymization.
+2025-12-22 12:04:24,843 - ml_pipeline - INFO - Anonymized column: source_ip
+2025-12-22 12:04:24,843 - ml_pipeline - WARNING - response_code column not found, cannot create label.
+2025-12-22 12:04:24,844 - ml_pipeline - INFO - Starting feature engineering.
+2025-12-22 12:04:24,889 - ml_pipeline - INFO - Feature engineering completed.
+2025-12-22 12:04:24,893 - ml_pipeline - INFO - Encoders and scaler saved.
+2025-12-22 12:04:24,893 - ml_pipeline - INFO - Preprocessing pipeline completed.
+2025-12-22 12:04:24,894 - ml_pipeline - INFO - Starting prediction and evaluation pipeline.
+2025-12-22 12:04:24,894 - ml_pipeline - ERROR - Model file not found.
+2025-12-22 12:10:20,470 - ml_pipeline - INFO - Isolation Forest model trained and saved to C:\Users\HP\Network-Traffic-Analysis\models\isolation_forest_model.pkl

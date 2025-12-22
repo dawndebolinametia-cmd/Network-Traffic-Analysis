@@ -90,7 +90,6 @@ def evaluate_model(model, X_test, y_test, model_name):
     recall = recall_score(y_test, y_pred, zero_division=0)
     f1 = f1_score(y_test, y_pred, zero_division=0)
 
-    # AUC might not be available if only one class in test set
     try:
         auc = roc_auc_score(y_test, y_pred_proba)
     except ValueError:

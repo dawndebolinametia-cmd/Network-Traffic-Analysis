@@ -5,7 +5,7 @@ import os
 PREDICTION_TABLE = "prediction_anomaly"
 DB_HOST = "localhost"
 DB_USER = "root"
-DB_PASSWORD = "Anime#210305"  # your password 😈
+DB_PASSWORD = "Anime#210305"  # your password
 DB_NAME = "analytics_data_fresh"
 DB_PORT = 3306  # default MySQL port
 
@@ -38,7 +38,7 @@ def create_table():
             )
         """)
         connection.commit()
-        print(f" Table '{PREDICTION_TABLE}' is ready! 😎")
+        print(f" Table '{PREDICTION_TABLE}' is ready! ")
     except pymysql.MySQLError as e:
         print(" Error creating table:", e)
     finally:
@@ -48,7 +48,7 @@ def create_table():
 def save_csv(df):
     os.makedirs(os.path.dirname(csv_path), exist_ok=True)
     df.to_csv(csv_path, index=False)
-    print(f" Predictions saved to CSV at '{csv_path}' 😈")
+    print(f" Predictions saved to CSV at '{csv_path}'")
 
 def insert_into_db(df):
     try:
@@ -66,7 +66,7 @@ def insert_into_db(df):
         data_tuples = [tuple(row) for row in df.values]
         cursor.executemany(insert_query, data_tuples)
         connection.commit()
-        print(f"Inserted {cursor.rowcount} predictions into '{PREDICTION_TABLE}' 😏")
+        print(f"Inserted {cursor.rowcount} predictions into '{PREDICTION_TABLE}' ")
     except pymysql.MySQLError as e:
         print(" Error inserting predictions:", e)
     finally:
@@ -77,4 +77,4 @@ if __name__ == "__main__":
     create_table()
     save_csv(demo_data)
     insert_into_db(demo_data)
-    print(" Demo run complete! 🎉")
+    print(" Demo run complete! ")
